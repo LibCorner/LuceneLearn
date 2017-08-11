@@ -32,8 +32,8 @@ public class SearchDemo {
 		//创建IndexSearcher类
 		IndexSearcher is=new IndexSearcher(ir);
 		//创建Query实例
-		//TermQuery query=new TermQuery(new Term("content","知识分子"));
-		Query query=new QueryBuilder(new StandardAnalyzer()).createBooleanQuery("content", "新");
+		TermQuery query=new TermQuery(new Term("content","知"));
+		//Query query=new QueryBuilder(new StandardAnalyzer()).createBooleanQuery("content", "新");
 		//检索前n个相关的文档,返回的TopDocs类包含hit文档的总数totalHits，和一个ScoreDoc数组。ScoreDoc对象有该文档的id(doc)和得分score
 		TopDocs tds=is.search(query, 2);  //IndexSearch对象中保存了检索到的文档
 		System.out.println("结果数："+tds.totalHits);

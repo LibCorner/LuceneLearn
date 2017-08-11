@@ -3,8 +3,9 @@ package lucene.learn.index;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.StringReader;
+import java.nio.file.Paths;
 
-import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -14,7 +15,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 /**
  * 建立索引
  */
@@ -27,7 +27,8 @@ public class IndexDemo {
 	}
 	public void buildIndex() throws Exception{
 		//索引的保存路径
-		Directory dir=FSDirectory.open(new File(indexPath).toPath());
+		//Directory dir=FSDirectory.open(new File(indexPath).toPath());
+		Directory dir=FSDirectory.open(Paths.get(indexPath));
 		//Directory dir=MMapDirectory.open(new File(indexPath).toPath());
 		//Directory dir=new RAMDirectory();  //在内存中建立索引
 		//IndexWriterConfig配置IndexWriter的一些属性
@@ -38,14 +39,17 @@ public class IndexDemo {
 		IndexWriter iw=new IndexWriter(dir,iwc);
 		BufferedReader br=new BufferedReader(new FileReader(filePath));
 		String line=null;
+		
+		//设置索引Field的类型
+		FieldType type=new FieldType();
+		type.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS); //索引文档和FREQS
+		type.setStored(true); //存储
+		type.setStoreTermVectors(true);
+		type.setTokenized(true); //分词
+		
 		while((line=br.readLine())!=null){
 			//创建Document
 			Document doc=new Document();
-			//设置索引Field的类型
-			FieldType type=new FieldType();
-			type.setIndexOptions(IndexOptions.DOCS_AND_FREQS); //索引文档和FREQS
-			type.setStored(true); //存储
-			type.setTokenized(true); //分词
 			doc.add(new Field("content",line,type));
 			//添加Docuemnt到索引
 			iw.addDocument(doc);
